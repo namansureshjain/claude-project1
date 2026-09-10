@@ -9,12 +9,14 @@ in your browser (`localStorage`), so use the same browser each day.
 
 ## Files
 
-- `index.html` — the whole site: markup, styles, and about 100 lines of JS. No build step, no dependencies.
-- `plan.js` — all 90 days of content. Edit this to change the plan; you never need to touch the HTML.
+One file: `index.html`. Markup, styles, content and about 100 lines of JS, no build step
+and no dependencies. Download it anywhere, rename it to anything, open it — it works on
+its own.
 
 ## Editing the plan
 
-Each week is one object in `PLAN`. A task is `["text"]` or `["text", "https://link"]`.
+The content lives in the `PLAN` array in the second `<script>` block. Each week is one
+object. A task is `["text"]` or `["text", "https://link"]`.
 
 ```js
 { d: "Mon", tasks: [
@@ -52,7 +54,7 @@ at the end.
 | 12 | Research reps | Reproduce a paper, then extend it |
 | 13 | Compound | Flagship v2 and publish |
 
-Every link in `plan.js` was checked against a live source when the plan was written.
+Every link was checked against a live source when the plan was written.
 Sources include Karpathy's Zero to Hero, Anthropic's courses and cookbooks, the Hugging
 Face Agents Course, Stanford CS336, and primary papers on arXiv.
 
