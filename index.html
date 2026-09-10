@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>90 Days</title>
+<style>
+  :root{
+    --bg:#0c0c0e; --card:#151519; --line:#26262c;
+    --text:#e6e6e8; --dim:#8a8a94; --accent:#7fd6a8;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+    padding:32px 16px 64px;
+  }
+  main{max-width:660px;margin:0 auto}
+  a{color:var(--accent)}
+  h1{font-size:26px;margin:0;font-weight:600;letter-spacing:-.02em}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);
+     font-weight:600;margin:32px 0 10px}
+  .sub{color:var(--dim);font-size:13px;margin-top:4px}
+  .bar{height:3px;background:var(--line);border-radius:2px;margin:18px 0 6px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+  .task{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+  .task:last-child{border-bottom:0;padding-bottom:0}
+  .task:first-child{padding-top:0}
+  input[type=checkbox]{
+    appearance:none;flex:0 0 17px;width:17px;height:17px;margin:2px 0 0;
+    border:1.5px solid #3a3a44;border-radius:4px;cursor:pointer;position:relative;background:transparent
+  }
+  input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+  input[type=checkbox]:checked::after{
+    content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;
+    border:solid #0c0c0e;border-width:0 2px 2px 0;transform:rotate(45deg)
+  }
+  .task.done label{color:var(--dim);text-decoration:line-through;text-decoration-color:#44444e}
+  label{cursor:pointer;flex:1}
+  .src{color:var(--dim);font-size:12px;margin-bottom:8px}
+  .name{font-weight:600;margin-bottom:6px}
+  details{border-top:1px solid var(--line)}
+  summary{cursor:pointer;padding:11px 2px;list-style:none;display:flex;gap:12px;font-size:14px}
+  summary::-webkit-details-marker{display:none}
+  summary .n{color:var(--dim);flex:0 0 46px;font-variant-numeric:tabular-nums}
+  summary:hover{color:var(--accent)}
+  details[open] summary{color:var(--accent)}
+  details .body{padding:2px 0 16px 58px;color:var(--dim);font-size:13.5px}
+  details .body button{display:block}
+  details .body b{color:var(--text);font-weight:600}
+  nav{display:flex;gap:8px;align-items:center;margin-top:34px;flex-wrap:wrap}
+  button{
+    background:transparent;border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer
+  }
+  button:hover{border-color:var(--accent);color:var(--accent)}
+  nav .grow{flex:1}
+  input[type=date]{
+    background:var(--card);border:1px solid var(--line);color:var(--dim);
+    border-radius:7px;padding:5px 9px;font:inherit;font-size:13px;color-scheme:dark
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="dayline">Day 1 / 90</h1>
+  <p class="sub" id="dateline"></p>
+  <div class="bar"><i id="fill"></i></div>
+  <p class="sub" id="pct"></p>
+
+  <h2 id="todayhead">Today</h2>
+  <div class="card" id="today"></div>
+
+  <h2>This week's project</h2>
+  <div class="card" id="project"></div>
+
+  <h2>All 13 weeks</h2>
+  <div id="weeks"></div>
+
+  <nav>
+    <button id="prev">&larr; Prev day</button>
+    <button id="next">Next day &rarr;</button>
+    <button id="today-btn">Today</button>
+    <span class="grow"></span>
+    <input type="date" id="start" title="Day 1 of your 90">
+  </nav>
+</main>
+
+<script src="plan.js"></script>
+<script>
+const KEY = "ai90";
+const DAYS = PLAN.flatMap(w => w.days.map((d, i) => ({ ...d, w, di: i })));
+const TOTAL = DAYS.reduce((n, d) => n + d.tasks.length, 0) + PLAN.length; // + one per weekly project
+
+let S = load();
+let view = null;                                   // null = follow the calendar
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {}
+}
+function today() {
+  if (!S.start) return 1;
+  const ms = new Date().setHours(0,0,0,0) - new Date(S.start + "T00:00:00").getTime();
+  return Math.min(90, Math.max(1, Math.floor(ms / 86400000) + 1));
+}
+function dateOf(n) {
+  if (!S.start) return null;
+  const d = new Date(S.start + "T00:00:00");
+  d.setDate(d.getDate() + n - 1);
+  return d.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" });
+}
+function isDone(k) { return !!(S.done || {})[k]; }
+function toggle(k, on) { (S.done = S.done || {})[k] = on; if (!on) delete S.done[k]; save(); }
+
+function render() {
+  const n = view || today();
+  const day = DAYS[n - 1];
+
+  dayline.textContent = "Day " + n + " / 90";
+  dateline.textContent = S.start
+    ? dateOf(n) + (n === today() ? "" : "  ·  viewing another day")
+    : "Set your start date below to begin.";
+
+  const done = Object.keys(S.done || {}).length;
+  fill.style.width = (done / TOTAL * 100) + "%";
+  pct.textContent = done + " of " + TOTAL + " done";
+
+  todayhead.textContent = "Week " + day.w.w + " · " + day.w.title;
+
+  today_.innerHTML = "";
+  day.tasks.forEach((t, i) => {
+    const k = n + ":" + i;
+    const row = document.createElement("div");
+    row.className = "task" + (isDone(k) ? " done" : "");
+    const box = document.createElement("input");
+    box.type = "checkbox"; box.checked = isDone(k); box.id = "t" + i;
+    box.onchange = () => { toggle(k, box.checked); render(); };
+    const lab = document.createElement("label");
+    lab.htmlFor = "t" + i;
+    lab.textContent = t[0];
+    if (t[1]) {
+      lab.append(" ");
+      const a = document.createElement("a");
+      a.href = t[1]; a.target = "_blank"; a.rel = "noopener"; a.textContent = "↗";
+      a.onclick = e => e.stopPropagation();
+      lab.append(a);
+    }
+    row.append(box, lab);
+    today_.append(row);
+  });
+
+  const p = day.w.project, pk = "p" + day.w.w;
+  project.innerHTML = "";
+  const meta = document.createElement("div");
+  meta.className = "src"; meta.textContent = p.src;
+  const row = document.createElement("div");
+  row.className = "task" + (isDone(pk) ? " done" : "");
+  const box = document.createElement("input");
+  box.type = "checkbox"; box.checked = isDone(pk); box.id = "pbox";
+  box.onchange = () => { toggle(pk, box.checked); render(); };
+  const lab = document.createElement("label");
+  lab.htmlFor = "pbox";
+  const nm = document.createElement("div");
+  nm.className = "name"; nm.textContent = p.name;
+  const br = document.createElement("div");
+  br.style.color = "var(--dim)"; br.style.fontSize = "13.5px"; br.textContent = p.brief;
+  lab.append(nm, br);
+  if (p.url) {
+    const a = document.createElement("a");
+    a.href = p.url; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = "Start here ↗"; a.style.fontSize = "13px";
+    a.onclick = e => e.stopPropagation();
+    const wrap = document.createElement("div");
+    wrap.style.marginTop = "8px"; wrap.append(a); lab.append(wrap);
+  }
+  row.append(box, lab);
+  project.append(meta, row);
+}
+
+function buildWeeks() {
+  PLAN.forEach(w => {
+    const first = DAYS.findIndex(d => d.w.w === w.w) + 1;
+    const d = document.createElement("details");
+    d.innerHTML =
+      '<summary><span class="n">Wk ' + w.w + '</span><span>' + w.title + '</span></summary>' +
+      '<div class="body"><b>Project:</b> ' + w.project.name + ' — ' + w.project.brief + '</div>';
+    const b = d.querySelector(".body");
+    const go = document.createElement("button");
+    go.textContent = "Go to day " + first;
+    go.style.marginTop = "10px";
+    go.onclick = () => { view = first; render(); scrollTo({ top: 0, behavior: "smooth" }); };
+    b.append(go);
+    weeks.append(d);
+  });
+}
+
+const today_ = document.getElementById("today");
+prev.onclick = () => { view = Math.max(1, (view || today()) - 1); render(); };
+next.onclick = () => { view = Math.min(90, (view || today()) + 1); render(); };
+document.getElementById("today-btn").onclick = () => { view = null; render(); };
+start.value = S.start || new Date().toISOString().slice(0, 10);
+start.onchange = () => { S.start = start.value; save(); view = null; render(); };
+if (!S.start) { S.start = start.value; save(); }
+
+buildWeeks();
+render();
+</script>
+</body>
+</html>

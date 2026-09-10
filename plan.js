@@ -1,0 +1,512 @@
+// 90-day plan data. Edit freely: each task is [text] or [text, url].
+const PLAN = [
+{
+  w: 1,
+  title: "Python, through the side door",
+  project: {
+    name: "Deal-flow file wrangler",
+    src: "Custom",
+    brief: "A script that walks a folder of decks and filings, pulls the text out of each, and writes a one-line index. Done = you run it on a real folder from work.",
+    url: "https://automatetheboringstuff.com/3e/"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Install Python and a code editor. Get one script to run."],
+      ["Automate the Boring Stuff 3e, chapter 1", "https://automatetheboringstuff.com/3e/"],
+      ["Write a script from a blank file that computes and prints something."]
+    ]},
+    { d: "Tue", tasks: [
+      ["ATBS chapters 2 and 3: control flow and functions", "https://automatetheboringstuff.com/3e/"],
+      ["Rewrite yesterday's script using a function that takes an argument."],
+      ["Break it on purpose. Read the error. Fix it."]
+    ]},
+    { d: "Wed", tasks: [
+      ["ATBS chapters 4 and 5: lists and dictionaries", "https://automatetheboringstuff.com/3e/"],
+      ["Script: count word frequency in a text file, print the top 10."]
+    ]},
+    { d: "Thu", tasks: [
+      ["ATBS chapter 9: reading and writing files", "https://automatetheboringstuff.com/3e/"],
+      ["Script: walk a folder, print every filename and its size."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Karpathy, Intro to Large Language Models (1 hour)", "https://www.youtube.com/watch?v=zjkBMFhNj_g"],
+      ["Write down 5 terms from it you could not define. Keep this list."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Extract the text from one real PDF and save it as .txt."],
+      ["Make the project run end to end on a real folder. Ugly is fine."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: what a Python script actually is, to your own self a week ago."],
+      ["Optional: one Jane Street puzzle, for fun only", "https://www.janestreet.com/puzzles/"]
+    ]}
+  ]
+},
+{
+  w: 2,
+  title: "First API calls, and structure",
+  project: {
+    name: "Deal Memo Summarizer v1",
+    src: "Anthropic API Fundamentals course + custom",
+    brief: "Feed it a deck or a filing, get back structured JSON: market, business model, risks, the ask. Done = you use it on a live deal.",
+    url: "https://github.com/anthropics/courses/tree/master/anthropic_api_fundamentals"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Get an API key and make your first call", "https://platform.claude.com/docs/en/get-started"],
+      ["Script: takes a prompt as input, prints the response."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Anthropic API Fundamentals, notebooks 1 to 3", "https://github.com/anthropics/courses/tree/master/anthropic_api_fundamentals"],
+      ["Change one parameter in each notebook and observe what breaks."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Finish API Fundamentals: system prompts and multi-turn", "https://github.com/anthropics/courses/tree/master/anthropic_api_fundamentals"],
+      ["Feed your extracted PDF text in and get a prose summary back."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Prompt engineering interactive tutorial, first half", "https://github.com/anthropics/courses/tree/master/prompt_engineering_interactive_tutorial"],
+      ["Tighten your summary prompt until the output is usable at work."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read Attention Is All You Need. You will not understand it.", "https://arxiv.org/abs/1706.03762"],
+      ["List every word you could not define. That list is your syllabus."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Make the output structured JSON: market, model, risks, ask."],
+      ["Run it on 3 real decks. Note where it gets things wrong."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Check what a million tokens costs across providers", "https://artificialanalysis.ai/"],
+      ["Write 500 words: what you are actually paying for when you call an API."]
+    ]}
+  ]
+},
+{
+  w: 3,
+  title: "Embeddings and retrieval",
+  project: {
+    name: "Semantic search over your own documents",
+    src: "Custom",
+    brief: "Twenty real documents, chunked and embedded, searchable by meaning rather than keyword. Done = it finds a memo you could not have found with ctrl-F.",
+    url: "https://www.sbert.net/docs/quickstart.html"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Sentence Transformers quickstart", "https://www.sbert.net/docs/quickstart.html"],
+      ["Embed 10 sentences. Print the similarity matrix. Stare at it."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Chunk your 20 documents into pieces of roughly 500 words."],
+      ["Embed every chunk. Save the vectors to disk."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Write cosine similarity search yourself in numpy. No database yet."],
+      ["Search for something you know is in there. Check the top 5."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Replace your numpy code with Chroma", "https://www.trychroma.com/"],
+      ["Same results, less code. Now you know what the database was doing."]
+    ]},
+    { d: "Fri", tasks: [
+      ["3Blue1Brown, neural networks chapters 1 to 4", "https://www.3blue1brown.com/lessons/neural-networks/"],
+      ["Cross off any word this clears from your week-2 syllabus list."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Ship: search running over your real corpus from the command line."],
+      ["Ask it 10 questions. Write down the 3 it handles badly."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words explaining embeddings without using the phrase vector space."],
+      ["Optional: Jane Street puzzle", "https://www.janestreet.com/puzzles/"]
+    ]}
+  ]
+},
+{
+  w: 4,
+  title: "RAG, end to end",
+  project: {
+    name: "RAG app a colleague can open",
+    src: "Custom, with Claude Cookbooks as reference",
+    brief: "Retrieval plus generation plus citations, behind a web UI. Done = a non-technical colleague asks it a real question and gets a sourced answer.",
+    url: "https://github.com/anthropics/claude-cookbooks"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Retrieve top 5 chunks, put them in the prompt, answer the question."],
+      ["Compare the answer against asking the model with no retrieval."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Add citations: every answer names the chunks it used."],
+      ["Check three answers by hand. Did it cite what it actually used?"]
+    ]},
+    { d: "Wed", tasks: [
+      ["Streamlit, get started", "https://docs.streamlit.io/get-started"],
+      ["Put a text box and an answer pane on your RAG."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Compare naive chunking against semantic chunking on 10 questions."],
+      ["Write down which won and by how much. This is your first measurement."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read the RAG paper", "https://arxiv.org/abs/2005.11401"],
+      ["Read Lost in the Middle, then check whether your app has that bug", "https://arxiv.org/abs/2307.03172"]
+    ]},
+    { d: "Sat", tasks: [
+      ["Ship: a colleague opens it and asks one real question."],
+      ["Watch them use it without helping. Note every hesitation."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: why retrieval beats fine-tuning for most business problems."]
+    ]}
+  ]
+},
+{
+  w: 5,
+  title: "Evals: where most people quit",
+  project: {
+    name: "A 50-case eval harness",
+    src: "Anthropic prompt evaluations course + promptfoo",
+    brief: "A test set for your RAG app, scored automatically. Done = you change one thing, re-score, and know whether it helped.",
+    url: "https://github.com/anthropics/courses/tree/master/prompt_evaluations"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Read: Your AI Product Needs Evals", "https://hamel.dev/blog/posts/evals/"],
+      ["Read: Patterns for building LLM systems", "https://eugeneyan.com/writing/llm-patterns/"]
+    ]},
+    { d: "Tue", tasks: [
+      ["Write 20 test cases by hand: real question, expected answer."],
+      ["Include 5 cases you know your app currently fails."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Anthropic prompt evaluations course", "https://github.com/anthropics/courses/tree/master/prompt_evaluations"],
+      ["Define success criteria and build evaluations", "https://platform.claude.com/docs/en/test-and-evaluate/eval-tool"]
+    ]},
+    { d: "Thu", tasks: [
+      ["Score with exact match where you can, model-as-judge where you cannot."],
+      ["Optional: run the same suite through promptfoo", "https://www.promptfoo.dev/docs/getting-started/"]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read Judging LLM-as-a-Judge", "https://arxiv.org/abs/2306.05685"],
+      ["Name the three judge biases. Check your own judge for all three."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Get to 50 cases. Change one thing in your RAG. Re-score."],
+      ["Record the delta. You now know something most AI founders do not."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write and publish: What I learned building an eval harness."],
+      ["Post it somewhere public. It will be rougher than you want. Post it."]
+    ]}
+  ]
+},
+{
+  w: 6,
+  title: "Tool use",
+  project: {
+    name: "Give your summarizer three tools",
+    src: "Anthropic tool use course + custom",
+    brief: "Search your corpus, fetch a URL, run a calculation. Done = it answers a question that needs two tools in sequence.",
+    url: "https://github.com/anthropics/courses/tree/master/tool_use"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Tool use with Claude, overview", "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"],
+      ["Define one tool. Make one call. Print the tool_use block."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Anthropic tool use course", "https://github.com/anthropics/courses/tree/master/tool_use"],
+      ["Handle the round trip yourself: tool_use, execute, tool_result."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Add three tools: corpus search, URL fetch, arithmetic."],
+      ["Write the tool descriptions carefully. They are prompts."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Make it loop until done, with a hard step budget."],
+      ["Deliberately give it a broken tool. Watch what it does."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read ReAct", "https://arxiv.org/abs/2210.03629"],
+      ["Read Chain-of-Thought prompting", "https://arxiv.org/abs/2201.11903"]
+    ]},
+    { d: "Sat", tasks: [
+      ["Ship: ask it something that needs two tools in sequence."],
+      ["Log every tool call. Read the log. It is never what you expected."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: why an agent is mostly a while-loop with tools."]
+    ]}
+  ]
+},
+{
+  w: 7,
+  title: "Agents that survive contact",
+  project: {
+    name: "Company research agent",
+    src: "Custom",
+    brief: "Researches a company across several sources and produces a one-page brief. Done = it handles a dead link and a rate limit without crashing.",
+    url: "https://www.anthropic.com/engineering/building-effective-agents"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Read Building Effective Agents, all of it", "https://www.anthropic.com/engineering/building-effective-agents"],
+      ["Decide which pattern in it you are actually building."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Agent loop with a step budget and an explicit stop condition."],
+      ["Make it say why it stopped, every time."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Failure handling: retries with backoff, timeouts, malformed JSON."],
+      ["Kill your network mid-run. It should fail cleanly, not hang."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Make it produce a one-page brief on any company you name."],
+      ["Run it on a company you know well. Grade the brief yourself."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read InstructGPT: how models learned to follow instructions", "https://arxiv.org/abs/2203.02155"],
+      ["Note where in your agent the model is guessing rather than knowing."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Run it on 3 real companies. Log every single failure."],
+      ["Fix the cheapest two failures. Leave the rest documented."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: three ways my agent quietly lied to me."]
+    ]}
+  ]
+},
+{
+  w: 8,
+  title: "MCP and multi-agent",
+  project: {
+    name: "An MCP server over your own data",
+    src: "Hugging Face Agents Course + custom",
+    brief: "Two tools exposed over MCP so any client can use your corpus. Done = someone else runs your server and gets useful answers.",
+    url: "https://modelcontextprotocol.io/docs/getting-started/intro"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["What is MCP", "https://modelcontextprotocol.io/docs/getting-started/intro"],
+      ["Connect one existing MCP server to a client and use it."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Hugging Face Agents Course, unit 1", "https://huggingface.co/learn/agents-course/en/unit1/introduction"]
+    ]},
+    { d: "Wed", tasks: [
+      ["Build your own MCP server with two tools over your corpus."],
+      ["Reference: building an MCP client", "https://modelcontextprotocol.io/docs/develop/build-client"]
+    ]},
+    { d: "Thu", tasks: [
+      ["Use your server for a real task at work. Note the friction."],
+      ["Split one agent into two that hand off. Was it better? Be honest."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Re-read Building Effective Agents with code in your head", "https://www.anthropic.com/engineering/building-effective-agents"],
+      ["Write down which pattern you built and which you should have."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Ship: someone else installs and runs your MCP server."],
+      ["Write the README they needed and did not have."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: MCP explained to a partner who does not code."]
+    ]}
+  ]
+},
+{
+  w: 9,
+  title: "Ship an AI-native app",
+  project: {
+    name: "Flagship v1, at a public URL",
+    src: "Custom",
+    brief: "One real problem from your desk, built properly and deployed. Done = a stranger opens the URL and it works.",
+    url: "https://docs.streamlit.io/deploy/streamlit-community-cloud/get-started/quickstart"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Pick the one problem from your desk worth 4 weeks of your life."],
+      ["Write the one sentence it promises. Everything else gets cut."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Stream the response so it feels fast instead of broken."],
+      ["Handle the empty state, the loading state, and the error state."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Log tokens, cost and latency on every single call."],
+      ["Look at the numbers. Most people never do."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Deploy it: Streamlit Community Cloud", "https://docs.streamlit.io/deploy/streamlit-community-cloud/get-started/quickstart"],
+      ["Or Gradio on Hugging Face Spaces", "https://huggingface.co/docs/hub/spaces-sdks-gradio"]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read Scaling Laws for Neural Language Models", "https://arxiv.org/abs/2001.08361"],
+      ["Then read Chinchilla. What did it overturn?", "https://arxiv.org/abs/2203.15556"]
+    ]},
+    { d: "Sat", tasks: [
+      ["Stranger test: someone outside your firm opens the URL, unhelped."],
+      ["Fix only what stopped them. Nothing else."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: what 100 real queries cost me, with the numbers."]
+    ]}
+  ]
+},
+{
+  w: 10,
+  title: "Under the hood (reproduction 1)",
+  project: {
+    name: "micrograd, then nanoGPT, typed by hand",
+    src: "Karpathy, Neural Networks: Zero to Hero",
+    brief: "Build backpropagation from scratch, then a transformer that generates text. Done = your own tiny GPT produces Shakespeare-shaped nonsense.",
+    url: "https://karpathy.ai/zero-to-hero.html"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Karpathy micrograd, first half. Type every line yourself.", "https://github.com/karpathy/micrograd"],
+      ["Do not copy-paste. The typing is the point."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Finish micrograd. Train a tiny network on toy data.", "https://karpathy.ai/zero-to-hero.html"],
+      ["You have now written backpropagation. Sit with that."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Lets build GPT, first half: bigram model and self-attention", "https://www.youtube.com/watch?v=kCc8FmEb1nY"]
+    ]},
+    { d: "Thu", tasks: [
+      ["Second half: multi-head attention, residuals, layer norm", "https://www.youtube.com/watch?v=kCc8FmEb1nY"],
+      ["nanoGPT for reference when you get stuck", "https://github.com/karpathy/nanoGPT"]
+    ]},
+    { d: "Fri", tasks: [
+      ["Transformer Explainer, click through every layer", "https://poloclub.github.io/transformer-explainer/"],
+      ["Re-read the Attention paper. Measure how much you now understand.", "https://arxiv.org/abs/1706.03762"]
+    ]},
+    { d: "Sat", tasks: [
+      ["Train your GPT on Shakespeare. Sample from it. Save the output."],
+      ["Change one hyperparameter. Train again. Explain the difference."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: what I understand now that I did not in week 2."]
+    ]}
+  ]
+},
+{
+  w: 11,
+  title: "Fine-tuning, and when not to",
+  project: {
+    name: "Fine-tune a small model, measure it against RAG",
+    src: "Unsloth notebooks + Hugging Face PEFT",
+    brief: "Same task, two approaches, one eval set. Done = you have numbers showing which wins for your use case, and why.",
+    url: "https://github.com/unslothai/notebooks"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Read LoRA", "https://arxiv.org/abs/2106.09685"],
+      ["Answer in one line: what is actually being trained?"]
+    ]},
+    { d: "Tue", tasks: [
+      ["PEFT LoRA conceptual guide", "https://huggingface.co/docs/peft/main/en/conceptual_guides/lora"]
+    ]},
+    { d: "Wed", tasks: [
+      ["Run one Unsloth notebook end to end, unchanged", "https://github.com/unslothai/notebooks"],
+      ["Then change the dataset and run it again."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Build a 200-example dataset in your own house memo style."],
+      ["Curating this data is 80% of the work. Notice that."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read QLoRA", "https://arxiv.org/abs/2305.14314"],
+      ["Skim Toy Models of Superposition for a different flavour of research", "https://transformer-circuits.pub/2022/toy_model/index.html"]
+    ]},
+    { d: "Sat", tasks: [
+      ["Fine-tune. Score it against your RAG on the week 5 eval set."],
+      ["Whichever loses, work out precisely why."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write 500 words: fine-tuning versus RAG, with my own numbers."]
+    ]}
+  ]
+},
+{
+  w: 12,
+  title: "Research reps: reproduce, then extend",
+  project: {
+    name: "Reproduce a published result, then run your own variation",
+    src: "Lost in the Middle (Liu et al.) + your own ablation",
+    brief: "Rebuild a paper result on current models, then test one question the paper did not ask. Done = a research note with method, results and limitations.",
+    url: "https://arxiv.org/abs/2307.03172"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Re-read Lost in the Middle, this time for method not conclusion", "https://arxiv.org/abs/2307.03172"],
+      ["Write down exactly what you are going to measure, before you build."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Build the harness: same question, relevant chunk at first, middle, last."],
+      ["Fix your random seeds. Log every run to disk."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Run it: 50 questions, two different models."],
+      ["Resist looking at results until the run is complete."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Plot accuracy against position. Does the U-curve still hold in 2026?"],
+      ["Whatever you found, argue the opposite for ten minutes."]
+    ]},
+    { d: "Fri", tasks: [
+      ["Read Toy Models of Superposition properly", "https://transformer-circuits.pub/2022/toy_model/index.html"],
+      ["Check the compute trend data behind your intuitions", "https://epoch.ai/trends"]
+    ]},
+    { d: "Sat", tasks: [
+      ["Run your own variation: does chunk size change the effect?"],
+      ["This is the part nobody assigned you. This is research."]
+    ]},
+    { d: "Sun", tasks: [
+      ["Write it as a research note: method, results, limitations, next question."],
+      ["State clearly what your experiment cannot tell you."]
+    ]}
+  ]
+},
+{
+  w: 13,
+  title: "Compound",
+  project: {
+    name: "Flagship v2 and publish",
+    src: "Custom",
+    brief: "Take your best project and make it genuinely good, then write the definitive piece on the thing you now know unusually well.",
+    url: "https://cs336.stanford.edu/spring2025"
+  },
+  days: [
+    { d: "Mon", tasks: [
+      ["Fix the three things real users actually tripped on."],
+      ["Delete a feature nobody used."]
+    ]},
+    { d: "Tue", tasks: [
+      ["Real error handling everywhere a call can fail."],
+      ["Wire your eval suite in so it runs before every change ships."]
+    ]},
+    { d: "Wed", tasks: [
+      ["Get 10 real people using it. Watch three of them."],
+      ["Write down what they did that you did not predict."]
+    ]},
+    { d: "Thu", tasks: [
+      ["Draft the definitive piece on your narrow area of real expertise."],
+      ["Read one week of Simon Willison for tone and pace", "https://simonwillison.net/"]
+    ]},
+    { d: "Fri", tasks: [
+      ["Stanford CS336, lecture 1 and assignment 1 spec", "https://cs336.stanford.edu/spring2025"],
+      ["Decide honestly whether you want to go that deep. Both answers are fine."]
+    ]},
+    { d: "Sat", tasks: [
+      ["Publish the piece. Post the link."],
+      ["Reassess: deeper technically, build a company, or back to investing sharper?"],
+      ["Browse what to learn next", "https://www.deeplearning.ai/courses"]
+    ]}
+  ]
+}
+];
