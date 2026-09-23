@@ -22,11 +22,24 @@ npm run dev          # http://localhost:3000
 ```bash
 npm run build        # production build
 npm run start        # serve the production build
+npm run export       # fully static build in out/
 npm run typecheck    # tsc --noEmit
 npm run lint         # next lint
 ```
 
 Requires Node 18.18+ (developed on Node 22).
+
+### Deploying
+
+The app is entirely client-rendered, so it can run as a static site or on any
+Node host.
+
+- **Vercel / Netlify** - import the repository; the defaults work with no
+  configuration.
+- **Any static host** (S3, GitHub Pages, Cloudflare Pages, `npx serve out`) -
+  run `npm run export` and deploy `out/`. Assets are referenced from the site
+  root, so serve `out/` at the root of a domain; to host it under a subpath,
+  set `basePath` in `next.config.mjs` first.
 
 ---
 
