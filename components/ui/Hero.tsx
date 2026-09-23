@@ -22,7 +22,7 @@ export default function Hero() {
   return (
     <div
       className={`pointer-events-none relative z-20 flex min-h-[100svh] flex-col justify-between
-                  px-5 pb-6 pt-24 transition-opacity duration-500 md:px-8 md:pb-10 md:pt-28
+                  px-5 pb-28 pt-24 transition-opacity duration-500 md:px-8 md:pb-10 md:pt-28
                   ${recede ? 'opacity-0' : 'opacity-100'}`}
       aria-hidden={recede}
     >

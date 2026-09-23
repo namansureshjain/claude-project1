@@ -7,7 +7,45 @@ export default function FidelityNote() {
       <h3 className="label-mono mb-3">About the 3D model</h3>
       <p className="max-w-3xl text-[14px] leading-[1.75] text-bone/85">{rocket.modelFidelityNote}</p>
 
-      <dl className="mt-5 grid gap-px bg-white/[0.07] sm:grid-cols-3">
+      <div className="mt-5 grid gap-px bg-white/[0.07] sm:grid-cols-2">
+        <div className="bg-void p-4">
+          <h4 className="font-mono text-[10px] uppercase tracking-mission text-ember">
+            The Earth and the Moon
+          </h4>
+          <p className="mt-2 text-[12px] leading-relaxed text-bone/85">
+            The planet uses NASA imagery, which is in the public domain: surface
+            colour, city lights, topography and cloud cover. The coastlines and the
+            lights are real. The globe is turned so that India faces the viewer and the
+            launch site is marked, and the sun&rsquo;s direction and the viewing altitude
+            were chosen to compose the shot rather than to reconstruct a particular
+            moment in the flight.
+          </p>
+          <p className="mt-2 text-[12px] leading-relaxed text-smoke">
+            The Moon is not photographic. No lunar map is bundled with this project, so
+            its surface is generated procedurally, and it is drawn a little larger than
+            the half-degree it really subtends. Do not read features into it.
+          </p>
+        </div>
+        <div className="bg-void p-4">
+          <h4 className="font-mono text-[10px] uppercase tracking-mission text-ember">
+            The livery
+          </h4>
+          <p className="mt-2 text-[12px] leading-relaxed text-bone/85">
+            The white airframe, the chevron run and the blue base with the SKYROOT
+            wordmark follow Skyroot&rsquo;s published vehicle renders, drawn here onto the
+            model rather than copied from an image. The most widely circulated of those
+            renders is labelled Vikram II; Skyroot uses the same livery family across the
+            Vikram vehicles, so treat this as a faithful livery rather than a measured
+            reproduction of Vikram-1&rsquo;s exact markings.
+          </p>
+          <p className="mt-2 text-[12px] leading-relaxed text-smoke">
+            Skyroot&rsquo;s logo mark is deliberately left off: it could not be reproduced
+            accurately here, and an approximation would be worse than its absence.
+          </p>
+        </div>
+      </div>
+
+      <dl className="mt-px grid gap-px bg-white/[0.07] sm:grid-cols-3">
         {[
           {
             t: 'Documented geometry',

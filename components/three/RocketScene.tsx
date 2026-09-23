@@ -9,7 +9,9 @@ import { useIsMobile, usePerformanceTier, useReducedMotion } from '@/lib/hooks';
 import RocketModel from './RocketModel';
 import PayloadBay from './PayloadBay';
 import Starfield from './Starfield';
-import EarthLimb from './EarthLimb';
+import Earth from './Earth';
+import Moon from './Moon';
+import LaunchSiteMarker from './LaunchSiteMarker';
 import CameraRig from './CameraRig';
 import SceneLighting from './SceneLighting';
 
@@ -34,6 +36,7 @@ export default function RocketScene({ paused = false }: { paused?: boolean }) {
   const selectComponent = useExplorer((s) => s.selectComponent);
   const selectPayload = useExplorer((s) => s.selectPayload);
   const setWebglFailed = useExplorer((s) => s.setWebglFailed);
+  const sceneReady = useExplorer((s) => s.sceneReady);
 
   const animate = !reduced;
   const quality = tier === 'low' ? 0.5 : tier === 'medium' ? 0.75 : 1;
@@ -66,7 +69,7 @@ export default function RocketScene({ paused = false }: { paused?: boolean }) {
         stencil: false,
         depth: true,
       }}
-      camera={{ position: [0, 0.5, 40], fov: 32, near: 0.1, far: 400 }}
+      camera={{ position: [0, 0.5, 40], fov: 32, near: 0.1, far: 1400 }}
       onCreated={onCreated}
       onPointerMissed={() => {
         // Clicking empty space clears the current selection but never the view.
@@ -76,12 +79,22 @@ export default function RocketScene({ paused = false }: { paused?: boolean }) {
       frameloop={paused ? 'never' : reduced ? 'demand' : 'always'}
     >
       <color attach="background" args={['#07080a']} />
-      <fog attach="fog" args={['#07080a', 55, 190]} />
+      <fog attach="fog" args={['#07080a', 140, 520]} />
 
       <Suspense fallback={null}>
         <SceneLighting quality={quality} />
         <Starfield count={starCount} animate={animate} />
-        {tier !== 'low' && <EarthLimb quality={quality} animate={animate} />}
+        {/* Earth and the Moon load their own textures, so they get their own
+            Suspense boundary and the vehicle is never held up waiting on them. */}
+        <Suspense fallback={null}>
+          <Earth quality={quality} animate={animate} clouds={tier !== 'low'} />
+          {tier !== 'low' && <Moon quality={quality} />}
+        </Suspense>
+
+        {/* Mounted only after the first frame - see LaunchSiteMarker. Skipped
+            on phones, where the wider hero framing pushes the site off the
+            left edge and the label would be clipped. */}
+        {sceneMode === 'vehicle' && sceneReady && !isMobile && <LaunchSiteMarker />}
 
         {sceneMode === 'payload-bay' ? (
           <PayloadBay animate={animate} />
@@ -96,8 +109,8 @@ export default function RocketScene({ paused = false }: { paused?: boolean }) {
 
         {usePost && (
           <EffectComposer multisampling={0}>
-            <Bloom intensity={0.42} luminanceThreshold={0.62} luminanceSmoothing={0.25} mipmapBlur />
-            <Vignette offset={0.28} darkness={0.62} />
+            <Bloom intensity={0.22} luminanceThreshold={0.88} luminanceSmoothing={0.2} mipmapBlur />
+            <Vignette offset={0.32} darkness={0.5} />
           </EffectComposer>
         )}
 

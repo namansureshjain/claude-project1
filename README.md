@@ -184,6 +184,45 @@ this one. `supplyChain.ts` carries a standing disclaimer to that effect and the 
 
 ---
 
+## Assets and credits
+
+`public/textures/` holds the Earth maps: surface colour, city lights,
+topography and cloud cover. These are **NASA imagery and in the public domain**,
+obtained from the MIT-licensed `three-globe` package and re-encoded for the web.
+`public/textures/CREDITS.md` records the provenance of each file and NASA's
+media-usage guidance. NASA does not endorse this project.
+
+Everything else is generated rather than downloaded:
+
+- **The rocket livery** (`lib/liveryTextures.ts`) is drawn onto canvas textures
+  at runtime - the white airframe, the chevron run, the blue base with the
+  SKYROOT wordmark, the national flag and the Ashoka Chakra. Nothing is fetched,
+  so it stays sharp at any zoom and costs nothing to load. The livery follows
+  Skyroot's published vehicle renders; the most circulated of those is labelled
+  Vikram II, and Skyroot uses the same livery family across the Vikram vehicles,
+  so this is a faithful livery rather than a measured reproduction of Vikram-1's
+  exact markings. Skyroot's logo mark is deliberately not drawn.
+- **The Moon** (`lib/moonTexture.ts`) is procedurally generated. It is not a
+  lunar map, and the site says so.
+- **The Indian flag** in the header is inline SVG at the official 3:2
+  proportions, with a 24-spoke Ashoka Chakra sized to three quarters of the
+  white band. It waves via an SVG turbulence displacement, and holds still under
+  `prefers-reduced-motion`.
+
+### Positioning the globe
+
+`components/three/Earth.tsx` turns the globe so India faces the viewer and pins
+Sriharikota. The three angles in `EARTH_ORIENTATION` are not eyeballed - they
+were solved for by projecting the launch site into screen space (to clear the
+vehicle and stay on the lit face) and then rotating about that axis until a
+point due north projects straight up the screen. Without that last step the
+globe lands very nearly upside down. **Changing the camera or the globe's
+position invalidates all three**; re-solve rather than nudging them.
+
+`lib/geo.ts` holds the lat/lon to vector maths. Its mapping was verified against
+both the texture (by sampling known land and ocean points) and three.js's own
+`SphereGeometry` UVs.
+
 ## Replacing or updating the 3D model
 
 The vehicle is **built procedurally** from published dimensions — there is no `.glb` to swap, and
