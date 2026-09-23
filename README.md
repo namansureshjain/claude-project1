@@ -35,7 +35,10 @@ The app is entirely client-rendered, so it can run as a static site or on any
 Node host.
 
 - **Vercel / Netlify** - import the repository; the defaults work with no
-  configuration.
+  configuration. `vercel.json` pins the framework to `nextjs` so the preset does
+  not depend on what Vercel happened to detect when the project was first
+  imported. It deliberately does not set `outputDirectory`: Vercel's Next.js
+  adapter handles that, and overriding it breaks the adapter.
 - **Any static host** (S3, GitHub Pages, Cloudflare Pages, `npx serve out`) -
   run `npm run export` and deploy `out/`. Assets are referenced from the site
   root, so serve `out/` at the root of a domain; to host it under a subpath,
