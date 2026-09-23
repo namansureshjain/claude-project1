@@ -1,6 +1,7 @@
 'use client';
 
 import { Environment, Lightformer } from '@react-three/drei';
+import { SUN_DIR } from './Earth';
 
 /**
  * Cinematic lighting built entirely from local light shapes — no HDRI download,
@@ -13,15 +14,25 @@ import { Environment, Lightformer } from '@react-three/drei';
 export default function SceneLighting({ quality }: { quality: number }) {
   return (
     <>
-      <ambientLight intensity={0.42} color="#9fb4d4" />
-      <directionalLight position={[-9, 14, 8]} intensity={2.7} color="#fff4e8" castShadow={false} />
-      <directionalLight position={[8, -4, -6]} intensity={0.38} color="#ffa877" />
+      <ambientLight intensity={0.36} color="#9fb4d4" />
+      {/* Key light on the same axis as the Earth's sun, so the vehicle is lit
+          from where the terminator says it should be. A white airframe needs
+          far less intensity than the bare-metal look it replaced. */}
+      <directionalLight
+        position={SUN_DIR.clone().multiplyScalar(22).toArray()}
+        intensity={2.0}
+        color="#fff4e8"
+        castShadow={false}
+      />
+      {/* Earthshine: cool bounce from the planet below. */}
+      <directionalLight position={[3, -12, 4]} intensity={0.42} color="#7fb0ff" />
+      <directionalLight position={[8, -4, -6]} intensity={0.22} color="#ffa877" />
       <pointLight position={[0, -12, 6]} intensity={0.5} color="#3d7fd6" distance={60} decay={2} />
 
       <Environment resolution={quality > 0.7 ? 256 : 128} frames={1} background={false}>
         <Lightformer
           form="rect"
-          intensity={4.2}
+          intensity={3.0}
           color="#ffffff"
           position={[-6, 8, 6]}
           rotation={[0, Math.PI / 5, 0]}

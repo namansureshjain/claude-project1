@@ -49,16 +49,18 @@ export function stageGeometry(
   radiusTop: number,
   length: number,
   quality: number,
+  /** Rotates the UV seam; -PI puts u = 0.5 at the front of the vehicle. */
+  thetaStart = -Math.PI,
 ) {
-  const geo = new THREE.CylinderGeometry(
+  return new THREE.CylinderGeometry(
     radiusTop,
     radiusBottom,
     length,
     Math.round(28 * quality) + 12,
     1,
     false,
+    thetaStart,
   );
-  return geo;
 }
 
 /** Bell nozzle: a flared skirt, open at both ends. */

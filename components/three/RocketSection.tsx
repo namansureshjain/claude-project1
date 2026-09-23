@@ -1,11 +1,22 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { RocketComponent } from '@/data/types';
 import { categoryColor } from './materials';
-import { bandGeometry, fairingGeometry, nozzleGeometry, stageGeometry } from '@/lib/geometry';
+import { fairingGeometry, nozzleGeometry, stageGeometry } from '@/lib/geometry';
+import {
+  LIVERY,
+  createBodyTexture,
+  createFlagSectionTexture,
+  createPlainTexture,
+  createStageOneTexture,
+} from '@/lib/liveryTextures';
+
+/** thetaStart for wrapped sections: puts u = 0.5 at the front (+Z), so drawn
+ *  livery faces the camera and the texture seam hides at the back. */
+const SEAM_AT_BACK = -Math.PI;
 
 const HOVER_EMISSIVE = 0.07;
 const SELECTED_EMISSIVE = 0.14;
@@ -48,9 +59,36 @@ export default function RocketSection({
   const materials = useRef<THREE.MeshStandardMaterial[]>([]);
 
   const baseColor = useMemo(
-    () => new THREE.Color(categoryColor[component.category]),
-    [component.category],
+    () => new THREE.Color(liveryTint(component.id) ?? categoryColor[component.category]),
+    [component.id, component.category],
   );
+
+  // Livery is drawn to a canvas rather than downloaded, so it stays sharp at
+  // any zoom and costs nothing to load.
+  const livery = useMemo(() => {
+    const circumference = 2 * Math.PI * component.radius;
+    switch (component.id) {
+      case 'stage-1':
+        return createStageOneTexture(circumference, component.length);
+      case 'stage-2':
+        return createBodyTexture(circumference, component.length);
+      case 'stage-3':
+        return createFlagSectionTexture(circumference, component.length);
+      case 'stage-4-oam':
+        return createPlainTexture(circumference, component.length, LIVERY.white);
+      case 'interstage-1-2':
+      case 'interstage-2-3':
+        return createPlainTexture(circumference, component.length, LIVERY.panel);
+      case 'payload-fairing':
+        return null;
+      default:
+        return null;
+    }
+  }, [component.id, component.radius, component.length]);
+
+  useEffect(() => () => livery?.dispose(), [livery]);
+
+  const painted = isPainted(component.id);
 
   const registerMaterial = (m: THREE.MeshStandardMaterial | null) => {
     if (m && !materials.current.includes(m)) materials.current.push(m);
@@ -106,12 +144,13 @@ export default function RocketSection({
   const shell = (
     <meshStandardMaterial
       ref={registerMaterial}
-      color={baseColor}
-      metalness={0.6}
-      roughness={0.34}
+      map={livery ?? undefined}
+      color={livery ? '#ffffff' : baseColor}
+      metalness={painted ? 0.08 : 0.55}
+      roughness={painted ? 0.46 : 0.36}
       emissive="#ff6b1f"
       emissiveIntensity={0}
-      envMapIntensity={1.45}
+      envMapIntensity={painted ? 0.75 : 1.4}
       side={THREE.DoubleSide}
     />
   );
@@ -136,11 +175,11 @@ export default function RocketSection({
               <meshStandardMaterial
                 ref={registerMaterial}
                 color={baseColor}
-                metalness={0.6}
-                roughness={0.34}
+                metalness={0.08}
+                roughness={0.46}
                 emissive="#ff6b1f"
                 emissiveIntensity={0}
-                envMapIntensity={1.45}
+                envMapIntensity={0.75}
                 side={THREE.DoubleSide}
               />
             </mesh>
@@ -169,6 +208,33 @@ export default function RocketSection({
       ))}
     </group>
   );
+}
+
+/** Painted airframe reads very differently from bare metal, so it gets its own
+ *  material response: low metalness, higher roughness, restrained reflections. */
+function isPainted(id: string) {
+  return [
+    'payload-fairing',
+    'payload-adapter',
+    'stage-1',
+    'stage-2',
+    'stage-3',
+    'stage-4-oam',
+    'interstage-1-2',
+    'interstage-2-3',
+  ].includes(id);
+}
+
+/** Base colour for painted sections that carry no drawn livery. */
+function liveryTint(id: string): string | null {
+  switch (id) {
+    case 'payload-fairing':
+      return LIVERY.white;
+    case 'payload-adapter':
+      return LIVERY.panel;
+    default:
+      return null;
+  }
 }
 
 function deckPlate(radius: number, length: number, segments: number) {
@@ -255,7 +321,15 @@ function buildGeometry(c: RocketComponent, quality: number): BuiltGeometry {
     case 'payload-adapter': {
       ring(c.radius * 1.02, 0, 0.03);
       return {
-        primary: new THREE.CylinderGeometry(c.radius * 0.84, c.radius, c.length, ringSegments),
+        primary: new THREE.CylinderGeometry(
+          c.radius * 0.84,
+          c.radius,
+          c.length,
+          ringSegments,
+          1,
+          false,
+          SEAM_AT_BACK,
+        ),
         details,
       };
     }
@@ -286,25 +360,25 @@ function buildGeometry(c: RocketComponent, quality: number): BuiltGeometry {
       // A few structural rings so the barrel reads as built, not extruded.
       const count = Math.max(1, Math.round(c.length / 3.2));
       for (let i = 1; i <= count; i += 1) {
-        ring(c.radius * 1.005, -c.length / 2 + (c.length * i) / (count + 1), 0.026, '#7d858e');
+        ring(c.radius * 1.005, -c.length / 2 + (c.length * i) / (count + 1), 0.022, '#d5d8dd');
       }
-      // A single warm accent band — the only decorative colour on the vehicle.
-      details.push({
-        geometry: bandGeometry(c.radius * 1.008, 0.14, quality),
-        position: [0, c.length / 2 - 0.42, 0],
-        color: '#ff6b1f',
-        metalness: 0.3,
-        roughness: 0.6,
-      });
       return { primary: stageGeometry(c.radius, topR, c.length, quality), details };
     }
 
     case 'interstage-1-2':
     case 'interstage-2-3': {
-      ring(c.radius * 1.02, -c.length / 2 + 0.03, 0.03, '#9aa2ab');
-      ring(c.radius * 1.02, c.length / 2 - 0.03, 0.03, '#9aa2ab');
+      ring(c.radius * 1.02, -c.length / 2 + 0.03, 0.03, '#b9bfc7');
+      ring(c.radius * 1.02, c.length / 2 - 0.03, 0.03, '#b9bfc7');
       return {
-        primary: new THREE.CylinderGeometry(c.radius * 0.95, c.radius, c.length, ringSegments, 1, true),
+        primary: new THREE.CylinderGeometry(
+          c.radius * 0.95,
+          c.radius,
+          c.length,
+          ringSegments,
+          1,
+          true,
+          SEAM_AT_BACK,
+        ),
         details,
       };
     }

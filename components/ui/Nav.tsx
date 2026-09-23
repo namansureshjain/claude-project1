@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useExplorer, type SectionId } from '@/lib/store';
+import IndianFlag from './IndianFlag';
 
 const LINKS: { id: SectionId; label: string; href: string }[] = [
   { id: 'rocket', label: 'Rocket', href: '#rocket' },
@@ -88,6 +89,19 @@ export default function Nav() {
           {open ? 'Close' : 'Menu'}
         </button>
       </nav>
+
+      {/* Sits just under the nav options, aligned to the same right gutter. */}
+      {!open && (
+        <div
+          className="pointer-events-none absolute right-5 top-full mt-2 flex items-center gap-2 md:right-8"
+          aria-hidden={false}
+        >
+          <span className="hidden font-mono text-[9px] uppercase tracking-mission text-smoke sm:inline">
+            Launched from India
+          </span>
+          <IndianFlag width={38} />
+        </div>
+      )}
 
       {open && (
         <ul
