@@ -109,9 +109,10 @@ export default function RocketSection({
     const s = THREE.MathUtils.damp(g.scale.x, targetScale, 8, delta);
     g.scale.setScalar(s);
 
-    // Fairing halves part sideways in exploded view; they stay close, so the
-    // vehicle still reads as one object rather than scattered pieces.
-    const part = exploded ? 0.5 : 0;
+    // The fairing lifts away whole. Parting the two halves sideways made the
+    // nose look like it was opening outwards instead of the stack separating
+    // cleanly in order, so the halves stay together.
+    const part = 0;
     if (leftHalf.current) {
       leftHalf.current.position.x = THREE.MathUtils.damp(leftHalf.current.position.x, -part, rate, delta);
     }
@@ -356,12 +357,9 @@ function buildGeometry(c: RocketComponent, quality: number): BuiltGeometry {
     case 'stage-3':
     case 'stage-2':
     case 'stage-1': {
+      // No structural rings: the drawn livery carries the detail now, and a
+      // raised ring cut straight across the first stage's chevrons.
       const topR = c.id === 'stage-1' ? c.radius : c.radius * 0.96;
-      // A few structural rings so the barrel reads as built, not extruded.
-      const count = Math.max(1, Math.round(c.length / 3.2));
-      for (let i = 1; i <= count; i += 1) {
-        ring(c.radius * 1.005, -c.length / 2 + (c.length * i) / (count + 1), 0.022, '#d5d8dd');
-      }
       return { primary: stageGeometry(c.radius, topR, c.length, quality), details };
     }
 

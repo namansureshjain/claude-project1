@@ -77,6 +77,12 @@ export default function Hero() {
       </div>
 
       <div className="relative max-w-sm">
+        {/* The globe now reaches the lower left, so the hints need a floor. */}
+        <div
+          className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 bg-gradient-to-r
+                     from-void via-void/75 to-transparent"
+          aria-hidden
+        />
         <ul
           className="animate-fadeUp space-y-1 font-mono text-[9px] uppercase tracking-mission text-smoke"
           style={{ animationDelay: '420ms' }}
