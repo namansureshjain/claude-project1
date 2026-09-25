@@ -19,17 +19,19 @@ import { SRIHARIKOTA, latLonToVector3, orientLatLonToward } from '@/lib/geo';
  */
 
 /**
- * Placed behind and below the vehicle rather than directly underneath it.
- * A globe this size sitting under the camera puts its near face below the
- * bottom of the frame, leaving only a grazing sliver of surface visible; set
- * back along the view axis, the lit face is in shot and the limb cuts across
- * the lower third.
+ * Placed behind and below the vehicle, set back far enough along the view axis
+ * that the lit face is in shot rather than a grazing sliver of limb.
+ *
+ * The earlier framing had India near the limb at a steep oblique, which made
+ * the subcontinent hard to recognise and the launch-site pin ambiguous. These
+ * values give a disc of about 15 degrees' radius whose limb crosses around
+ * y = 500, so India reads face-on while the hero type still sits against black.
  */
 const EARTH_RADIUS = 150;
-export const EARTH_CENTER = new THREE.Vector3(0, -181, -316);
+export const EARTH_CENTER = new THREE.Vector3(-95.7, -166.8, -506.6);
 
 /** Direction from the globe's centre toward the hero camera. */
-const VIEW_DIR = new THREE.Vector3(0, 181.5, 356).normalize();
+const VIEW_DIR = new THREE.Vector3(95.7, 167.3, 546.6).normalize();
 
 /** Shared with the scene key light so the Earth's terminator, the Moon's phase
  *  and the highlights on the vehicle all agree on where the sun is. */
@@ -38,22 +40,25 @@ export const SUN_DIR = new THREE.Vector3(-0.52, 0.7, 0.49).normalize();
 /**
  * Orientation of the globe. Constant, so it is computed once at module scope.
  *
- * The two angles were solved for by projecting Sriharikota into screen space:
- * they put the launch site clear to the left of the vehicle, on the lit face,
- * at a readable angle. The roll was solved the same way, by rotating until a
- * point due north of the site projects straight up the screen - without it the
- * globe lands very nearly upside down. Changing the camera or the globe's
- * position invalidates all three.
+ * All three angles were solved numerically, not eyeballed. The first two were
+ * found by projecting Sriharikota into screen space and searching for the pair
+ * that lands it near (430, 665) while keeping it at least 0.88 face-on, so the
+ * pin sits unmistakably on India's south-east coast rather than foreshortened
+ * against the limb. The roll was found the same way, by rotating about that
+ * axis until a point due north of the site projects straight up the screen;
+ * without it the globe lands at an arbitrary angle and the geography stops
+ * being recognisable. Changing the camera or the globe's position invalidates
+ * all three - re-solve rather than nudging them.
  */
 export const EARTH_ORIENTATION = (() => {
   const target = VIEW_DIR.clone()
-    .applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(-22))
-    .applyAxisAngle(new THREE.Vector3(1, 0, 0), THREE.MathUtils.degToRad(-40))
+    .applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(-4))
+    .applyAxisAngle(new THREE.Vector3(1, 0, 0), THREE.MathUtils.degToRad(-26))
     .normalize();
   const q = orientLatLonToward(SRIHARIKOTA.lat, SRIHARIKOTA.lon, target);
   const northUp = new THREE.Quaternion().setFromAxisAngle(
     target,
-    THREE.MathUtils.degToRad(-179),
+    THREE.MathUtils.degToRad(-143),
   );
   return northUp.multiply(q);
 })();

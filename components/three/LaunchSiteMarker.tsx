@@ -17,8 +17,15 @@ import { LAUNCH_SITE_POSITION } from './Earth';
 export default function LaunchSiteMarker() {
   return (
     <group position={LAUNCH_SITE_POSITION}>
-      <Html center zIndexRange={[45, 0]} style={{ pointerEvents: 'none' }}>
-        <div className="flex items-center gap-2 whitespace-nowrap">
+      {/* Not `center`: that would centre the whole dot-plus-label row on the
+          site, putting the dot well to the west of it. Anchoring the row at the
+          point and nudging back by half the dot keeps the dot itself on
+          Sriharikota, with the label running out over the Bay of Bengal. */}
+      <Html zIndexRange={[45, 0]} style={{ pointerEvents: 'none' }}>
+        <div
+          className="flex items-center gap-2 whitespace-nowrap"
+          style={{ transform: 'translate(-5px, -50%)' }}
+        >
           <span className="relative block h-2.5 w-2.5 shrink-0">
             <span className="absolute inset-0 rounded-full border border-ember bg-ember/40" />
             <span className="absolute inset-[3px] rounded-full bg-ember" />

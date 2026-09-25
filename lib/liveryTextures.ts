@@ -69,18 +69,6 @@ function panelLines(ctx: CanvasRenderingContext2D, W: number, H: number, count =
   ctx.restore();
 }
 
-/** Horizontal ring seam at a given fraction down the section. */
-function ringSeam(ctx: CanvasRenderingContext2D, W: number, y: number, weight = 2) {
-  ctx.save();
-  ctx.strokeStyle = 'rgba(0,0,0,0.13)';
-  ctx.lineWidth = weight;
-  ctx.beginPath();
-  ctx.moveTo(0, y);
-  ctx.lineTo(W, y);
-  ctx.stroke();
-  ctx.restore();
-}
-
 /**
  * One chevron band. Apex points up at the front of the vehicle (canvas centre)
  * and the band drops away toward the seam at the back, which is how a chevron
@@ -108,7 +96,16 @@ function chevronBand(
   ctx.restore();
 }
 
-/** Letters stacked down the vehicle, each upright — as on the real airframe. */
+/**
+ * Largest font size at which `count` stacked letters still fit in `available`
+ * pixels. Without this a wordmark silently runs off the end of the texture and
+ * its last letters are clipped.
+ */
+function fitFontSize(count: number, available: number, gap: number, max: number) {
+  return Math.min(max, (available * 0.94) / (count * gap));
+}
+
+/** Letters stacked down the vehicle, each upright - as on the real airframe. */
 function verticalText(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -182,31 +179,35 @@ export function createStageOneTexture(circumference: number, length: number): TH
 
   ctx.fillStyle = LIVERY.white;
   ctx.fillRect(0, 0, W, H);
-  panelLines(ctx, W, H, 8);
-  ringSeam(ctx, W, H * 0.18);
-  ringSeam(ctx, W, H * 0.4);
+  // Few and faint: the real airframe is a smooth painted tube, not a stack of
+  // panels, and heavy seams made the vehicle read as segmented.
+  panelLines(ctx, W, H, 3);
 
-  // Blue base occupying the lower third.
-  const blueTop = H * 0.66;
+  const blueTop = H * 0.6;
   ctx.fillStyle = LIVERY.blue;
   ctx.fillRect(0, blueTop, W, H - blueTop);
 
-  // Chevrons climbing out of the blue, in the order the livery uses.
-  const amp = H * 0.075;
-  const t = H * 0.026;
+  // Chevrons climbing out of the blue, in the order the livery uses. The
+  // amplitude is what makes them read as chevrons rather than stripes.
+  const amp = H * 0.135;
+  const t = H * 0.023;
   const bands: [string, number][] = [
     [LIVERY.blue, 0],
-    [LIVERY.orange, 1.15],
-    [LIVERY.amber, 2.3],
-    [LIVERY.yellow, 3.45],
-    [LIVERY.panel, 4.75],
-    [LIVERY.shadow, 5.9],
+    [LIVERY.orange, 1.2],
+    [LIVERY.amber, 2.4],
+    [LIVERY.yellow, 3.6],
+    [LIVERY.panel, 5.0],
+    [LIVERY.shadow, 6.2],
   ];
   for (const [color, step] of bands) {
-    chevronBand(ctx, W, blueTop - step * t, t * 1.02, amp, color);
+    chevronBand(ctx, W, blueTop - step * t, t * 1.05, amp, color);
   }
 
-  verticalText(ctx, 'SKYROOT', W / 2, blueTop + H * 0.085, W * 0.062, '#ffffff', 1.12);
+  const word = 'SKYROOT';
+  const gap = 1.1;
+  const band = H - blueTop;
+  const fs = fitFontSize(word.length, band * 0.78, gap, W * 0.08);
+  verticalText(ctx, word, W / 2, blueTop + band * 0.15 + fs / 2, fs, '#ffffff', gap);
 
   return finish(canvas);
 }
@@ -219,11 +220,12 @@ export function createBodyTexture(circumference: number, length: number): THREE.
 
   ctx.fillStyle = LIVERY.white;
   ctx.fillRect(0, 0, W, H);
-  panelLines(ctx, W, H, 8);
-  ringSeam(ctx, W, H * 0.12);
-  ringSeam(ctx, W, H * 0.88);
+  panelLines(ctx, W, H, 3);
 
-  verticalText(ctx, 'VIKRAM-1', W / 2, H * 0.3, W * 0.055, LIVERY.ink, 1.1);
+  const word = 'VIKRAM-1';
+  const gap = 1.1;
+  const fs = fitFontSize(word.length, H * 0.62, gap, W * 0.07);
+  verticalText(ctx, word, W / 2, H * 0.22 + fs / 2, fs, LIVERY.ink, gap);
 
   return finish(canvas);
 }
@@ -239,9 +241,9 @@ export function createFlagSectionTexture(
 
   ctx.fillStyle = LIVERY.white;
   ctx.fillRect(0, 0, W, H);
-  panelLines(ctx, W, H, 8);
+  panelLines(ctx, W, H, 3);
 
-  const fw = W * 0.17;
+  const fw = W * 0.2;
   flagDecal(ctx, W / 2 - fw / 2, H * 0.3, fw);
 
   return finish(canvas);
@@ -259,8 +261,7 @@ export function createPlainTexture(
 
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, W, H);
-  panelLines(ctx, W, H, 6);
-  ringSeam(ctx, W, H * 0.5, 1.5);
+  panelLines(ctx, W, H, 3);
 
   return finish(canvas);
 }
